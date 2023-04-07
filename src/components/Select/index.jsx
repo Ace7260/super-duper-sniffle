@@ -7,7 +7,7 @@ const SelectWrapper = ({ name, options, ...otherProps }) => {
 
   const handleChange = (evet) => {
     const { value } = evet.target;
-    console.log("ddddd", name);
+    //  console.log("ddddd", name);
     setFieldValue(name, value);
   };
 

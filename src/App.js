@@ -4,7 +4,9 @@ import * as Yup from "yup";
 // import RegistrationForm from "./RegistrationForm";
 import Textfield from "./components/Textfield";
 import Select from "./components/Select";
+import Checkbox from "./components/Checkbox";
 import countries from "./data/countries.json";
+
 import {
   Box,
   Container,
@@ -12,6 +14,8 @@ import {
   Typography,
   makeStyles,
 } from "@material-ui/core";
+import DateTimePicker from "./components/DataTimePicker";
+import Button from "./components/Button";
 const useStyles = makeStyles((theme) => ({
   formWrapper: {
     marginTop: theme.spacing(5),
@@ -28,7 +32,17 @@ function App() {
       .typeError("Please enter Valid phone number")
       .required("Required"),
     country: Yup.string().required("Required"),
+    city: Yup.string().required("Required"),
+    state: Yup.string().required("Required"),
     addressLine1: Yup.string().required("Required"),
+
+    arrivealDate: Yup.date().required("Required"),
+    departureDate: Yup.date().required("Required"),
+
+    message: Yup.string(),
+    termsOfService: Yup.boolean()
+      .oneOf([true], "The terms and conditions must be accepted.")
+      .required("The terms and conditions must be accepted."),
   });
   const INITIALVALUES = {
     firstname: "",
@@ -36,7 +50,14 @@ function App() {
     email: "",
     phone: "",
     addressLine1: "",
+    addressLine2: "",
     country: "",
+    city: "",
+    state: "",
+    arrivealDate: "",
+    departureDate: "",
+    message: "",
+    termsOfService: false,
   };
   const classes = useStyles();
 
@@ -72,7 +93,7 @@ function App() {
         <Container maxWidth="md">
           <Box className={classes.formWrapper}>
             <Formik
-              initialValues={INITIALVALUES}
+              initialValues={{ ...INITIALVALUES }}
               validationSchema={VALIDATION}
               onSubmit={(values) => {
                 console.log(values);
@@ -136,13 +157,38 @@ function App() {
                     <Typography>Booking Information</Typography>
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    <Textfield name="arrivalDate" label="Arrival Date" />
+                    <DateTimePicker name="arrivealDate" label="Arrival Date" />
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    <Textfield name="dep_date" label="Departure Date" />
+                    <DateTimePicker
+                      name="departureDate"
+                      label="Departure Date"
+                    />
                   </Grid>
                   <Grid item xs={12}>
-                    <Textfield name="message" label="Message" />
+                    <Textfield
+                      name="message"
+                      label="Message"
+                      multiline={true}
+                      minRows={4}
+                    />
+                  </Grid>
+                  {/* <Grid item xs={12}>
+                    <Checkbox
+                      //name="termsOfService"
+                      //legend="Terms Of Service"
+                      label="I agree"
+                    />
+                  </Grid> */}
+                  <Grid item xs={12}>
+                    <Checkbox
+                      name="termsOfService"
+                      legend="Terms Of Service"
+                      label="I agree"
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Button>Submit Form</Button>
                   </Grid>
                 </Grid>
               </Form>

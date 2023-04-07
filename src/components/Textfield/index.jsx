@@ -5,20 +5,21 @@ import { TextField } from "@material-ui/core";
 
 const Textfieldwraper = ({ name, ...otherProps }) => {
   const [field, meta] = useField(name);
-  console.log("ssssss", field.onBlur);
-  console.log("eeeeee", meta.initialTouched);
+  // console.log("ssssss", field.onBlur);
+  // console.log("eeeeee", meta.initialTouched);
 
   const config = {
     ...field,
     ...otherProps,
     fullWidth: true,
     variant: "outlined",
+    //autocomplete: "off",
   };
   if (meta && meta.touched && meta.error) {
     config.error = true;
     config.helperText = meta.error;
   }
 
-  return <TextField {...config} />;
+  return <TextField {...config} autoComplete="off" />;
 };
 export default Textfieldwraper;
