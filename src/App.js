@@ -1,203 +1,195 @@
+import React, { useState } from "react";
 import "./App.css";
-import { Form, Formik } from "formik";
-import * as Yup from "yup";
-// import RegistrationForm from "./RegistrationForm";
-import Textfield from "./components/Textfield";
-import Select from "./components/Select";
-import Checkbox from "./components/Checkbox";
-import countries from "./data/countries.json";
+import { Button, Grid, Stack, TextField } from "@mui/material";
+import { Tableau } from "./components/Tables";
+import { useFormik } from "formik";
+import InputField from "./components/Textfield";
+import * as yup from "yup";
 
-import {
-  Box,
-  Container,
-  Grid,
-  Typography,
-  makeStyles,
-} from "@material-ui/core";
-import DateTimePicker from "./components/DataTimePicker";
-import Button from "./components/Button";
-const useStyles = makeStyles((theme) => ({
-  formWrapper: {
-    marginTop: theme.spacing(5),
-    marginBottom: theme.spacing(8),
-  },
-}));
-function App() {
-  const VALIDATION = Yup.object().shape({
-    firstname: Yup.string().required("Required"),
-    lastName: Yup.string().required("Required"),
-    email: Yup.string().required("Required").email("Email Invalid"),
-    phone: Yup.number()
-      .integer()
-      .typeError("Please enter Valid phone number")
-      .required("Required"),
-    country: Yup.string().required("Required"),
-    city: Yup.string().required("Required"),
-    state: Yup.string().required("Required"),
-    addressLine1: Yup.string().required("Required"),
-
-    arrivealDate: Yup.date().required("Required"),
-    departureDate: Yup.date().required("Required"),
-
-    message: Yup.string(),
-    termsOfService: Yup.boolean()
-      .oneOf([true], "The terms and conditions must be accepted.")
-      .required("The terms and conditions must be accepted."),
-  });
-  const INITIALVALUES = {
-    firstname: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    addressLine1: "",
-    addressLine2: "",
-    country: "",
-    city: "",
-    state: "",
-    arrivealDate: "",
-    departureDate: "",
-    message: "",
-    termsOfService: false,
+const App = () => {
+  const initialValue = {
+    name: "",
+    interest: "",
+    age: "",
   };
-  const classes = useStyles();
 
-  // const CssTextField = styled(Textfield)({
-  //   "& label.Mui-focused": {
-  //     color: "green",
-  //   },
-  //   "& .MuiInput-underline:after": {
-  //     borderBottomColor: "green",
-  //   },
-  //   "& .MuiOutlinedInput-root": {
-  //     "& fieldset": {
-  //       borderColor: "black",
-  //     },
-  //     "&:hover fieldset": {
-  //       borderColor: "green",
-  //     },
-  //     "&.Mui-focused fieldset": {
-  //       borderColor: "green",
-  //     },
-  //   },
-  // });
+  const [data, setData] = useState([]);
+  const [yourState, setYourState] = useState(initialValue);
+  const [search, setSearch] = useState("");
+
+  const validationSchema = yup.object({
+    name: yup.string().required("name is required"),
+    interest: yup.string().required("interest is required"),
+    age: yup.string().required("age is required"),
+  });
+
+  const formik = useFormik({
+    enableReinitialize: true,
+    initialValues: yourState,
+    validationSchema,
+    onSubmit: (values) => {
+      if (data.indexOf(values) === -1) setData([...data, values]);
+      else alert("This person is already in the table.");
+      setYourState(initialValue);
+      setYourState({ name: "", interest: "", age: "" });
+      formik.resetForm();
+    },
+  });
+
+  const handleDelete = (row) => {
+    let newArr = data.filter((item) => item !== row);
+    setData(newArr);
+  };
+
+  const handleEdit = (row) => {
+    setYourState(row);
+    handleDelete(row);
+  };
+
+  const reinitForm = () => {
+    formik.resetForm();
+    setYourState(yourState);
+  };
+
+  const handleSearch = (event) => {
+    // console.log(term.target.value);
+    const term = event?.target.value;
+    setSearch(term);
+    // data.includes(term);
+    if (term) {
+      const newRows = data.filter((row) => {
+        let matches = true;
+
+        const properties = ["name", "interest", "age"];
+        let containsQuery = false;
+
+        properties.forEach((property) => {
+          if (
+            row[property]
+              ?.toString()
+              .toLowerCase()
+              .includes(search.toString().toLowerCase())
+          ) {
+            containsQuery = true;
+          }
+        });
+
+        if (!containsQuery) {
+          matches = false;
+        }
+        return matches;
+      });
+      setData({ rows: newRows });
+    } else {
+      setData(data);
+    }
+  };
+
+  const handleSubmit = () => {
+    console.log(data, "sending");
+    // apiCallingHere
+  };
 
   return (
     <Grid
       container
       direction="column"
       justifyContent="center"
-      alignItems="center"
-      gap="10"
+      alignContent="center"
+      padding={5}
+      gap={5}
     >
-      <Grid item xs={12}>
-        <Container maxWidth="md">
-          <Box className={classes.formWrapper}>
-            <Formik
-              initialValues={{ ...INITIALVALUES }}
-              validationSchema={VALIDATION}
-              onSubmit={(values) => {
-                console.log(values);
-              }}
-            >
-              <Form>
-                <Typography
-                  variant="h1"
-                  style={{
-                    textAlign: "center",
-                    fontSize: "20px",
-                    fontWeigth: "900",
-                    borderBottom: "2px solid #8888",
-                    paddingBottom: "10px",
-                    marginBottom: "15px",
-                  }}
-                >
-                  Registration Form
-                </Typography>
-                <Grid container spacing={3}>
-                  <Grid item xs={12}>
-                    <Typography>Your details</Typography>
-                  </Grid>
+      <form onSubmit={formik.handleSubmit}>
+        <Grid container spacing={2} xs={12}>
+          <Grid item xs={5}>
+            <InputField
+              size="small"
+              fullWidth
+              label="firstName"
+              id="name"
+              name="name"
+              value={formik.values?.name || ""}
+              handleChange={formik.handleChange}
+              error={formik.touched.name && Boolean(formik.errors.name)}
+              helperText={formik.touched.name && formik.errors.name}
+            />
+          </Grid>
+          <Grid item xs={5}>
+            <InputField
+              size="small"
+              fullWidth
+              label="Interest"
+              id="interest"
+              name="interest"
+              value={formik.values?.interest || ""}
+              handleChange={formik.handleChange}
+              error={formik.touched.interest && Boolean(formik.errors.interest)}
+              helperText={formik.touched.interest && formik.errors.interest}
+            />
+          </Grid>
+          <Grid item xs={5}>
+            <InputField
+              size="small"
+              fullWidth
+              label="Age"
+              id="Age"
+              name="age"
+              value={formik.values?.age || ""}
+              handleChange={formik.handleChange}
+              error={formik.touched.age && Boolean(formik.errors.age)}
+              helperText={formik.touched.age && formik.errors.age}
+            />
+          </Grid>
+          <Grid item xs={5}>
+            <InputField
+              size="small"
+              fullWidth
+              label="Age"
+              id="Age"
+              name="age"
+              value={formik.values?.age || ""}
+              handleChange={formik.handleChange}
+              error={formik.touched.age && Boolean(formik.errors.age)}
+              helperText={formik.touched.age && formik.errors.age}
+            />
+          </Grid>
 
-                  <Grid item xs={12} sm={6}>
-                    <Textfield name="firstname" label="First Name" />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Textfield name="lastName" label="Last Name" />
-                  </Grid>
-
-                  <Grid item xs={12}>
-                    <Textfield name="email" label="Email" />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Textfield name="phone" label="Phone" />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography>Address</Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Textfield name="addressLine1" label="Address Line1" />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Textfield name="addressLine2" label="Address Line2" />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Textfield name="city" label="City" />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Textfield name="state" label="State" />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Select
-                      name="country"
-                      label="Country"
-                      options={countries}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography>Booking Information</Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <DateTimePicker name="arrivealDate" label="Arrival Date" />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <DateTimePicker
-                      name="departureDate"
-                      label="Departure Date"
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Textfield
-                      name="message"
-                      label="Message"
-                      multiline={true}
-                      minRows={4}
-                    />
-                  </Grid>
-                  {/* <Grid item xs={12}>
-                    <Checkbox
-                      //name="termsOfService"
-                      //legend="Terms Of Service"
-                      label="I agree"
-                    />
-                  </Grid> */}
-                  <Grid item xs={12}>
-                    <Checkbox
-                      name="termsOfService"
-                      legend="Terms Of Service"
-                      label="I agree"
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Button>Submit Form</Button>
-                  </Grid>
-                </Grid>
-              </Form>
-            </Formik>
-          </Box>
-        </Container>
-      </Grid>
+          <Grid item xs={12}>
+            <Stack direction="row" justifyContent="center" gap={12}>
+              <Button type="submit" variant="contained" color="primary">
+                Add
+              </Button>
+              <Button
+                type="button"
+                variant="contained"
+                color="primary"
+                onClick={() => reinitForm()}
+              >
+                reset
+              </Button>
+            </Stack>
+          </Grid>
+        </Grid>
+      </form>
+      <TextField
+        name="search"
+        id="input"
+        fullWidth
+        variant="outlined"
+        autoComplete="off"
+        size="small"
+        onChange={(e) => handleSearch(e)}
+        value={search}
+        style={{ minWidth: 50 }}
+      />
+      <Tableau
+        data={data}
+        handleDelete={handleDelete}
+        handleEdit={handleEdit}
+        handleSubmit={handleSubmit}
+      />
     </Grid>
   );
-}
+};
 
 export default App;

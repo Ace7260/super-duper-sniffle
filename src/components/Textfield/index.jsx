@@ -1,25 +1,71 @@
-import React from "react";
-import { useField } from "formik";
-// import { styled } from "@mui/material";
-import { TextField } from "@material-ui/core";
+import { TextField } from "@mui/material";
+import PropTypes from "prop-types";
 
-const Textfieldwraper = ({ name, ...otherProps }) => {
-  const [field, meta] = useField(name);
-  // console.log("ssssss", field.onBlur);
-  // console.log("eeeeee", meta.initialTouched);
-
-  const config = {
-    ...field,
-    ...otherProps,
-    fullWidth: true,
-    variant: "outlined",
-    //autocomplete: "off",
-  };
-  if (meta && meta.touched && meta.error) {
-    config.error = true;
-    config.helperText = meta.error;
-  }
-
-  return <TextField {...config} autoComplete="off" />;
+const InputField = ({
+  label,
+  handleChange,
+  name,
+  defaultValue,
+  style,
+  labelStyles,
+  value,
+  id,
+  ...props
+}) => {
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "start",
+        marginTop: 3,
+        marginBottom: 3,
+        ...style,
+      }}
+    >
+      <label
+        htmlFor="input"
+        style={{
+          marginRight: 5,
+          fontWeight: "normal",
+          color: "black",
+          marginBottom: 10,
+          ...labelStyles,
+        }}
+      >
+        {label}
+      </label>
+      <TextField
+        id="input"
+        {...props}
+        fullWidth
+        variant="outlined"
+        defaultValue={defaultValue}
+        autoComplete="off"
+        size="small"
+        onChange={handleChange}
+        value={value}
+        name={name}
+        style={{ minWidth: 50 }}
+        data-testid={id}
+      />
+    </div>
+  );
 };
-export default Textfieldwraper;
+
+InputField.propTypes = {
+  handleChange: PropTypes?.func,
+  label: PropTypes?.oneOfType([PropTypes.string, PropTypes.object]),
+  name: PropTypes?.string,
+  defaultValue: PropTypes?.string,
+  style: PropTypes?.func,
+  labelStyles: PropTypes?.func,
+  value: PropTypes?.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+    PropTypes.object,
+  ]),
+  id: PropTypes.string,
+};
+
+export default InputField;

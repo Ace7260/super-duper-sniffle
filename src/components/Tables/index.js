@@ -2,7 +2,8 @@ import React from "react";
 import "./index.css";
 import { Box } from "@mui/material";
 
-export const Tableau = ({ data, handleDelete, handleEdit }) => {
+export const Tableau = ({ data, handleDelete, handleEdit, handleSubmit }) => {
+  console.log(data);
   return (
     <table>
       <caption>Front-end web developer course 2024</caption>
@@ -17,7 +18,7 @@ export const Tableau = ({ data, handleDelete, handleEdit }) => {
       <tbody>
         {data.map((item, key) => {
           return (
-            <tr onDoubleClick={() => handleEdit(item)} id={key}>
+            <tr onDoubleClick={() => handleEdit(item)} key={key}>
               {" "}
               <th scope="row">{item.name}</th>
               <td>{item.interest}</td>
@@ -40,6 +41,12 @@ export const Tableau = ({ data, handleDelete, handleEdit }) => {
             All datas
           </th>
           <td>{data.length}</td>
+          <td>
+            {" "}
+            <Box sx={{ cursor: "pointer" }} onClick={handleSubmit}>
+              SEND TO DB
+            </Box>
+          </td>
         </tr>
       </tfoot>
     </table>
