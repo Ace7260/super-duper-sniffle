@@ -74,94 +74,87 @@ function RegistrationForm() {
       // validateOnChange={false}
       // validateOnBlur={false}
     >
-      {(formik) => {
-        console.log("props formik", formik);
-        return (
-          <Form className="form-registration">
-            <label htmlFor="name">Name</label>
-            <Field type="text" name="name" id="name" autoComplete="off" />
+      {/* {(formik) => {
+        console.log("props formik", formik); */}
+      return (
+      <Form className="form-registration">
+        <label htmlFor="name">Name</label>
+        <Field type="text" name="name" id="name" autoComplete="off" />
 
-            <ErrorMessage name="name" component={TextError} />
+        <ErrorMessage name="name" component={TextError} />
 
-            <label htmlFor="email">E-mail</label>
-            <Field type="email" name="email" id="email" autoComplete="off" />
+        <label htmlFor="email">E-mail</label>
+        <Field type="email" name="email" id="email" autoComplete="off" />
 
-            <ErrorMessage name="email" component={TextError} />
+        <ErrorMessage name="email" component={TextError} />
 
-            <label htmlFor="channel">Channel</label>
-            <Field type="text" name="channel" id="channel" autoComplete="off" />
+        <label htmlFor="channel">Channel</label>
+        <Field type="text" name="channel" id="channel" autoComplete="off" />
 
-            <ErrorMessage name="channel" component={TextError} />
+        <ErrorMessage name="channel" component={TextError} />
 
-            <label htmlFor="address">Address</label>
-            <Field name="address">
-              {(props) => {
-                const { field, meta } = props;
-                console.log("Render props", props);
-                return (
-                  <div>
-                    <input type="text" id="address" {...field} />
-                    {meta.touched && meta.error ? (
-                      <div>{meta.error}</div>
-                    ) : null}
+        <label htmlFor="address">Address</label>
+        <Field name="address">
+          {(props) => {
+            const { field, meta } = props;
+            console.log("Render props", props);
+            return (
+              <div>
+                <input type="text" id="address" {...field} />
+                {meta.touched && meta.error ? <div>{meta.error}</div> : null}
+              </div>
+            );
+          }}
+        </Field>
+        <label htmlFor="facebook">Facebook</label>
+        <Field type="text" name="social.facebook" id="facebook" />
+
+        <ErrorMessage name="social.facebook" component={TextError} />
+
+        <label htmlFor="twitter">Twitter</label>
+        <Field type="text" name="social.twitter" id="twitter" />
+
+        <ErrorMessage name="social.twitter" component={TextError} />
+
+        <label htmlFor="primaryPh">Primary phone number</label>
+        <Field type="text" id="primaryPh" name="phoneNumber[0]" />
+
+        <ErrorMessage name="phoneNumber[0]" component={TextError} />
+
+        <label htmlFor="comment">Textarea</label>
+        <Field as="textarea" name="comment" id="comment" validate={comments} />
+        <ErrorMessage name="comment" component={TextError} />
+
+        <label htmlFor="secondaryPh">Secondary phone number</label>
+        <Field type="text" id="secondaryPh" name="phoneNumber[1]" />
+        {/* <ErrorMessage name="phoneNumber[1]" component={TextError} /> */}
+
+        <FieldArray name="phNumber">
+          {(fieldArrayProps) => {
+            console.log("fieldArrayProps", fieldArrayProps);
+            const { push, remove, form } = fieldArrayProps;
+            const { values } = form;
+            const { phNumber } = values;
+            return (
+              <div>
+                {phNumber.map((phNumbr, index) => (
+                  <div key={index}>
+                    <Field name={`phNumber[${index}]`} />
+                    {index > 0 && (
+                      <button type="button" onClick={() => remove(index)}>
+                        {""}-{""}
+                      </button>
+                    )}
+                    <button type="button" onClick={() => push("")}>
+                      {""}+{""}
+                    </button>
                   </div>
-                );
-              }}
-            </Field>
-            <label htmlFor="facebook">Facebook</label>
-            <Field type="text" name="social.facebook" id="facebook" />
-
-            <ErrorMessage name="social.facebook" component={TextError} />
-
-            <label htmlFor="twitter">Twitter</label>
-            <Field type="text" name="social.twitter" id="twitter" />
-
-            <ErrorMessage name="social.twitter" component={TextError} />
-
-            <label htmlFor="primaryPh">Primary phone number</label>
-            <Field type="text" id="primaryPh" name="phoneNumber[0]" />
-
-            <ErrorMessage name="phoneNumber[0]" component={TextError} />
-
-            <label htmlFor="comment">Textarea</label>
-            <Field
-              as="textarea"
-              name="comment"
-              id="comment"
-              validate={comments}
-            />
-            <ErrorMessage name="comment" component={TextError} />
-
-            <label htmlFor="secondaryPh">Secondary phone number</label>
-            <Field type="text" id="secondaryPh" name="phoneNumber[1]" />
-            {/* <ErrorMessage name="phoneNumber[1]" component={TextError} /> */}
-
-            <FieldArray name="phNumber">
-              {(fieldArrayProps) => {
-                console.log("fieldArrayProps", fieldArrayProps);
-                const { push, remove, form } = fieldArrayProps;
-                const { values } = form;
-                const { phNumber } = values;
-                return (
-                  <div>
-                    {phNumber.map((phNumbr, index) => (
-                      <div key={index}>
-                        <Field name={`phNumber[${index}]`} />
-                        {index > 0 && (
-                          <button type="button" onClick={() => remove(index)}>
-                            {""}-{""}
-                          </button>
-                        )}
-                        <button type="button" onClick={() => push("")}>
-                          {""}+{""}
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                );
-              }}
-            </FieldArray>
-            {/* <button
+                ))}
+              </div>
+            );
+          }}
+        </FieldArray>
+        {/* <button
               type="button"
               onClick={() => formik.validateField("comment")}
             >
@@ -191,23 +184,23 @@ function RegistrationForm() {
             >
               Visit all(TouchAll)
             </button> */}
-            <button
-              type="button"
-              // disabled={!formik.isValid}
-              onClick={() => setFormValues(Values)}
-            >
-              Load Saved Data
-            </button>
-            <button
-              type="submit"
-              // disabled={!formik.isValid}
-              disabled={formik.isSubmitting}
-            >
-              Submit
-            </button>
-          </Form>
-        );
-      }}
+        <button
+          type="button"
+          // disabled={!formik.isValid}
+          onClick={() => setFormValues(Values)}
+        >
+          Load Saved Data
+        </button>
+        <button
+          type="submit"
+          // disabled={!formik.isValid}
+          // disabled={formik.isSubmitting}
+        >
+          Submit
+        </button>
+      </Form>
+      );
+      {/* }} */}
     </Formik>
   );
 }
