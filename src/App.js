@@ -5,6 +5,7 @@ import { Tableau } from "./components/Tables";
 import { useFormik } from "formik";
 import InputField from "./components/Textfield";
 import * as yup from "yup";
+import File from "./components/File";
 
 const App = () => {
   const initialValue = {
@@ -99,6 +100,7 @@ const App = () => {
       padding={5}
       gap={5}
     >
+      <File />
       <form onSubmit={formik.handleSubmit}>
         <Grid container spacing={2} xs={12}>
           <Grid item xs={5}>
